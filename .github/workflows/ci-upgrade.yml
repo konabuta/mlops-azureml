@@ -1,0 +1,113 @@
+name: middle-loop continuous integration for retraining
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - middle-loop/*
+
+
+jobs:
+  assets:
+    name: "Create assets"
+    runs-on: "ubuntu-18.04"
+    steps:
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: echo
+      run: az --version
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZ_CREDS}}
+    - name: setup
+      run: bash setup.sh ${{secrets.RESOURCE}} ${{secrets.WORKSPACE}} ${{secrets.LOCATION}}
+      working-directory: admin/cli
+    - name : Computes
+      run: |
+        az ml compute create -f ./assets/compute/create-cluster.yml
+      working-directory: middle-loop
+    - name : Data
+      run: |
+        az ml data create -f ./assets/data/create-data.yml
+      working-directory: middle-loop
+    - name : Environments
+      run: |
+        az ml environment create -f ./assets/environment/create-environment.yml
+      working-directory: middle-loop
+
+  test:
+    name: "Unit test"
+    needs: [assets]
+    runs-on: ubuntu-18.04
+    steps: 
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: echo
+      run: az --version
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZ_CREDS}}
+    - name: setup
+      run: bash setup.sh ${{secrets.RESOURCE}} ${{secrets.WORKSPACE}} ${{secrets.LOCATION}}
+      working-directory: admin/cli
+    - name: Pytest
+      run: |
+        az ml job create -f ./model_testing/testing-model-job.yml
+      working-directory: middle-loop
+      
+
+  model-train:
+    name: "Model Retraining"
+    needs: [test]
+    runs-on: ubuntu-18.04
+    steps:
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: echo
+      run: az --version
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZ_CREDS}}
+    - name: setup
+      run: bash setup.sh ${{secrets.RESOURCE}} ${{secrets.WORKSPACE}} ${{secrets.LOCATION}}
+      working-directory: admin/cli
+    - name: Model Training with AzureML assets
+      run: |
+        az ml job create -f ./model_training_with_azureml_assets/model_training_with_azureml_assets.yml -a job_metadata.yml
+      working-directory: middle-loop
+    - name: Compare model performance
+      run: echo "UNDER CONSTRUCTION"
+      working-directory: outer-loop
+    - name: Model Regitry
+      run: |
+        jobname=$(cat test.tt | grep ^name: | cut -d: -f2 | xargs)
+        echo $jobname
+        az ml model create -f ./model_registry/register-model.yml -p "azureml://jobs/${jobname}/outputs/artifacts/paths/model"
+      working-directory: middle-loop
+
+
+  responsible-ai:
+    name: "Responsible AI"
+    needs: [model-train]
+    runs-on: ubuntu-18.04
+    steps:
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: echo
+      run: az --version
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZ_CREDS}}
+    - name: setup
+      run: bash setup.sh ${{secrets.RESOURCE}} ${{secrets.WORKSPACE}} ${{secrets.LOCATION}}
+      working-directory: admin/cli
+    - name: Responsible AI Job
+      run: |
+        echo "Responsible AI is no implemented"
+
+

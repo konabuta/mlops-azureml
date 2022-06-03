@@ -1,0 +1,37 @@
+name: train-local
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - inner-loop/*
+
+jobs:
+  build:
+    name: "Initial model development"
+    runs-on: "ubuntu-18.04"
+    steps:
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: echo
+      run: az --version
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZ_CREDS}}
+    - name: setup python
+      uses: actions/setup-python@v2
+      with: 
+        python-version: "3.8"
+    #TODO: requirements.txt -> lightgbm-env.yml
+    - name: Run Install packages
+      run: |
+         pip install -r ./inner-loop/artifacts/packages/requirements.txt 
+      shell: bash
+    - name: setup
+      run: bash setup.sh ${{secrets.RESOURCE}} ${{secrets.WORKSPACE}} ${{secrets.LOCATION}}
+      working-directory: admin/cli
+    - name: run train-model.ipynb
+      run: papermill train-local.ipynb -
+      working-directory: inner-loop/experimental_model_training

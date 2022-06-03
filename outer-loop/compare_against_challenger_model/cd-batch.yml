@@ -1,0 +1,60 @@
+name: mlops-cd
+
+pull_request:
+  branches:
+    - main
+
+jobs:
+  model-deployment:
+    name: "Model Deployment"
+    runs-on: ubuntu-latest
+    defaults:
+      run: outer-loop/
+      
+    steps:
+    
+    - name: check out repo
+      users: actions/checkout@v2
+
+    - name: Python setup
+      users: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Deploy Managed Batch Endpoints
+      run: |
+        az ml endpoint xxxxx
+
+
+  endpoint-test:
+    name: "Model Testing"
+    runs-on: ubuntu-latest
+    defaults:
+      run: outer-loop/
+
+    steps:
+    - name: Azure ML CLI v2 setup
+      run: |
+        az xxxx
+
+    steps:
+    - name: Model Training Job
+      run: |
+        az ml job xxxx
+
+
+  promote-model:
+    name: "Blue/Green Deployment"
+    runs-on: ubuntu-latest
+    defaults:
+      run: outer-loop/
+
+    steps:
+    - name: Azure ML CLI v2 setup
+      run: |
+        az xxxx
+
+    steps:
+    - name: Deploy new model into production (Blue/Green)
+      run: |
+        az ml job xxxx

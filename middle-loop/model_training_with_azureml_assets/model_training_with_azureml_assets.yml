@@ -1,0 +1,12 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+experiment_name: mlopstest
+command: |
+  pip freeze
+  python train.py --iris-csv ${{inputs.iris_csv}}
+code: src
+inputs:
+  iris_csv:
+    type: uri_file
+    path: azureml:titanic-train@latest
+environment: azureml:lightgbm-env@latest
+compute: azureml:cpu-clusters

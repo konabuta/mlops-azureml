@@ -1,0 +1,77 @@
+name: monitoring model and system
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * *'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - outer-loop/*
+
+
+jobs:
+  model-monitor:
+    name: "Model Performance check"
+    runs-on: "ubuntu-18.04"
+    steps:
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: echo
+      run: az --version
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZ_CREDS}}
+    - name: setup
+      run: bash setup.sh ${{secrets.RESOURCE}} ${{secrets.WORKSPACE}} ${{secrets.LOCATION}}
+      working-directory: admin/cli
+    - name: Model Accuracy
+      run: echo "UNDER CONSTRUCTION"
+      working-directory: outer-loop
+    - name: Data Drift
+      run: echo "UNDER CONSTRUCTION"
+      working-directory: outer-loop
+
+  system-monitor:
+    name: "System Performance check"
+    runs-on: "ubuntu-18.04"
+    steps:
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: echo
+      run: az --version
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZ_CREDS}}
+    - name: setup
+      run: bash setup.sh ${{secrets.RESOURCE}} ${{secrets.WORKSPACE}} ${{secrets.LOCATION}}
+      working-directory: admin/cli
+    - name: System Performance
+      run: echo "UNDER CONSTRUCTION"
+      working-directory: outer-loop
+
+# # If retraning flag is True...
+
+#   retrain-model:
+#     name: "Retraining Model"
+#     runs-on: "ubuntu-18.04"
+#     steps:
+#     - name: check out repo
+#       uses: actions/checkout@v2
+#     - name: echo
+#       run: az --version
+#     - name: azure login
+#       uses: azure/login@v1
+#       with:
+#         creds: ${{secrets.AZ_CREDS}}
+#     - name: setup
+#       run: bash setup.sh ${{secrets.RESOURCE}} ${{secrets.WORKSPACE}} ${{secrets.LOCATION}}
+#       working-directory: admin/cli
+#     - name: Retraining Model using new data
+#       run: echo "UNDER CONSTRUCTION"
+#       working-directory: outer-loop
+#     - name: Compare model performance
+#       run: echo "UNDER CONSTRUCTION"
+#       working-directory: outer-loop

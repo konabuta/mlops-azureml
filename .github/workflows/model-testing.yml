@@ -1,0 +1,30 @@
+name: model-testing
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - middle-loop/*
+
+jobs:
+  build:
+    name: "Model Testing"
+    runs-on: "ubuntu-18.04"
+    steps:
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: echo
+      run: az --version
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZ_CREDS}}
+    - name: setup
+      run: bash setup.sh ${{secrets.RESOURCE}} ${{secrets.WORKSPACE}} ${{secrets.LOCATION}}
+      working-directory: admin/cli
+    #TODO: requirements.txt -> lightgbm-env.yml
+    - name: Registering Model
+      run: |
+         az ml job create -f ./model_testing/model_testing.yml
+      working-directory: middle-loop/

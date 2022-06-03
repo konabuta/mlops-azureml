@@ -1,0 +1,13 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+experiment_name: mlopstest
+command: |
+  python train.py --iris-csv ${{inputs.iris_csv}}
+code: src
+inputs:
+  iris_csv:
+    type: uri_file 
+    path: ../artifacts/sample-data/Titanic.csv
+environment: 
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+  conda_file: ../artifacts/packages/conda/lightgbm-env.yml
+compute: azureml:cpu-clusters

@@ -1,0 +1,69 @@
+name: middle-loop continuous integration
+
+on:
+pull_request:
+  branches:
+    - main
+  paths:
+    - middle-loop/*
+
+
+jobs:
+  assets:
+    name: "Create assets"
+    runs-on: "ubuntu-latest"
+    steps:
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZ_CREDS}}
+    - name: setup
+      run: bash setup.sh
+      working-directory: admin/cli
+    - namae : Computes
+      run: |
+        az ml compute create -f ./compute/create-cluster.yml
+      working-directory: middle-loop
+    - namae : Data
+      run: |
+        az ml data create -f ./data/create-data.yml
+      working-directory: middle-loop
+    - namae : Environments
+      run: |
+        az ml environment create -f ./environment/create-environment.yml
+      working-directory: middle-loop
+
+  test:
+    name: "Unit test"
+    runs-on: ubuntu-latest     
+    steps: 
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: Python setup
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Pytest
+      uses:
+      run: |
+        pytest xxxxx
+
+  model-train:
+    name: "Model Training"
+    runs-on: ubuntu-latest
+    steps:
+    - name: Model Training Job
+      run: |
+        az ml job -f training-model-with-azureml-assets.yml
+      working-diretory: middle-loop
+
+
+  responsible-ai:
+    name: "Responsible AI"
+    runs-on: ubuntu-latest
+    steps:
+    - name: Responsible AI Job
+      run: |
+        echo "Responsible AI is no implemented"

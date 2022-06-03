@@ -1,0 +1,6 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
+name: green
+model: azureml:lgb-mlflow-model@latest
+app_insights_enabled: true
+instance_type: Standard_F2s_v2
+instance_count: 1

@@ -1,0 +1,45 @@
+name: model-deployment-into-stage-blue
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - middle-loop/*
+
+jobs:
+  build:
+    name: "Model Deploymento into Stage endpoint"
+    runs-on: "ubuntu-18.04"
+    steps:
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: echo
+      run: az --version
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZ_CREDS}}
+    - name: setup
+      run: bash setup.sh ${{secrets.RESOURCE}} ${{secrets.WORKSPACE}} ${{secrets.LOCATION}}
+      working-directory: admin/cli
+    #TODO: requirements.txt -> lightgbm-env.yml
+    - name: Creat Endpoint
+      run: |
+        job_flag=$(az ml online-endpoint list --query "[].name | contains(@,'lgb-endpoint-stage')")
+        if [ $job_flag == "true" ]; then
+          az ml online-endpoint delete --name lgb-endpoint-stage --yes
+        else
+          echo "Endpoint lgb-endpoint-stage doesn't exist."
+        fi
+        az ml online-endpoint create --name lgb-endpoint-stage
+    - name: Create Deployment - STAGE
+      run: |
+        deployment_flag=$(az ml online-deployment list --endpoint-name lgb-endpoint-stage --query "[].name | contains(@,'blue')")
+        if [ $deployment_flag == "true" ]; then
+          az ml online-deployment delete --endpoint-name lgb-endpoint-stage --name blue --yes
+        else
+          echo "Deployment blue doesn't exist."
+        fi     
+        az ml online-deployment create --endpoint lgb-endpoint-stage -f ./model_deployment_into_stage/blue-deployment.yml --all-traffic
+      working-directory: outer-loop

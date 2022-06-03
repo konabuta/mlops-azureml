@@ -1,0 +1,62 @@
+name: model-deployment-into-existing-endpoints
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - outer-loop/*
+
+jobs:
+  model-deploy-existing-stage:
+    name: "Model Deployment into existing endpoints (Stage)"
+    runs-on: "ubuntu-18.04"
+    steps:
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: echo
+      run: az --version
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZ_CREDS}}
+    - name: setup
+      run: bash setup.sh ${{secrets.RESOURCE}} ${{secrets.WORKSPACE}} ${{secrets.LOCATION}}
+      working-directory: admin/cli
+    - name: Create Deployment into Stage - GREEN
+      run: |
+        deployment_flag=$(az ml online-deployment list --endpoint-name lgb-endpoint-stage --query "[].name | contains(@,'green')")
+        if [ $deployment_flag == "true" ]; then
+          az ml online-deployment delete --endpoint-name lgb-endpoint-stage --name green --yes
+        else
+          echo "Deployment green doesn't exist."
+        fi     
+        az ml online-deployment create --endpoint lgb-endpoint-stage -f ./model_deployment_into_existing_endpoints/green-deployment.yml
+      working-directory: outer-loop
+
+  model-deploy-existing-prod:
+    name: "Model Deployment into existing endpoints (Prod)"
+    needs: [model-deploy-existing-stage]
+    runs-on: "ubuntu-18.04"
+    steps:
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: echo
+      run: az --version
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZ_CREDS}}
+    - name: setup
+      run: bash setup.sh ${{secrets.RESOURCE}} ${{secrets.WORKSPACE}} ${{secrets.LOCATION}}
+      working-directory: admin/cli
+    - name: Create Deployment into Prod - GREEN
+      run: |
+        deployment_flag=$(az ml online-deployment list --endpoint-name lgb-endpoint-prod --query "[].name | contains(@,'green')")
+        if [ $deployment_flag == "true" ]; then
+          az ml online-deployment delete --endpoint-name lgb-endpoint-prod--name green --yes
+        else
+          echo "Deployment green doesn't exist."
+        fi     
+        az ml online-deployment create --endpoint lgb-endpoint-prod -f ./model_deployment_into_existing_endpoints/green-deployment.yml
+      working-directory: outer-loop

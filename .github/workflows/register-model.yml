@@ -1,0 +1,32 @@
+name: register-model
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - middle-loop/*
+
+jobs:
+  build:
+    name: "Model Registry"
+    runs-on: "ubuntu-18.04"  #gifted_zoo_n3894f20d9
+    env:
+      jobname: gifted_zoo_n3894f20d9
+    steps:
+    - name: check out repo
+      uses: actions/checkout@v2
+    - name: echo
+      run: az --version
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZ_CREDS}}
+    - name: setup
+      run: bash setup.sh ${{secrets.RESOURCE}} ${{secrets.WORKSPACE}} ${{secrets.LOCATION}}
+      working-directory: admin/cli
+    #TODO: requirements.txt -> lightgbm-env.yml
+    - name: Registering Model
+      run: |
+         az ml model create -f ./model_registry/register-model.yml -p "azureml://jobs/${{env.jobname}}/outputs/artifacts/paths/model"
+      working-directory: middle-loop/

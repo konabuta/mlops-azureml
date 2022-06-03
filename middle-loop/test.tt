@@ -1,0 +1,48 @@
+creation_context:
+  created_at: '2022-06-01T08:17:15.663556+00:00'
+  created_by: Keita Onabuta
+  created_by_type: User
+services:
+  Studio:
+    job_service_type: Studio
+    endpoint: https://ml.azure.com/runs/gifted_zoo_n3894f20d9?wsid=/subscriptions/9c0f91b8-eb2f-484c-979c-15848c098a6b/resourcegroups/azureml-mlopshack/workspaces/azureml-mlopshack&tid=72f988bf-86f1-41af-91ab-2d7cd011db47
+  Tracking:
+    job_service_type: Tracking
+    endpoint: azureml://japaneast.api.azureml.ms/mlflow/v1.0/subscriptions/9c0f91b8-eb2f-484c-979c-15848c098a6b/resourceGroups/azureml-mlopshack/providers/Microsoft.MachineLearningServices/workspaces/azureml-mlopshack?
+name: gifted_zoo_n3894f20d9
+id: azureml:/subscriptions/9c0f91b8-eb2f-484c-979c-15848c098a6b/resourceGroups/azureml-mlopshack/providers/Microsoft.MachineLearningServices/workspaces/azureml-mlopshack/jobs/gifted_zoo_n3894f20d9
+display_name: gifted_zoo_n3894f20d9
+tags: {}
+status: Starting
+experiment_name: mlopstest
+properties:
+  ContentSnapshotId: 89089d17-7c34-49ff-bfd5-0b48fd57fce7
+  _azureml.ComputeTargetType: amlctrain
+  azureml.git.dirty: 'False'
+  mlflow.source.git.branch: main
+  mlflow.source.git.commit: f3f23afca787e08c0f1e18fec3497a8a57bd0e81
+  mlflow.source.git.repoURL: https://github.com/konabuta/mlops-azureml
+compute: azureml:cpu-clusters
+command: 'pip freeze
+
+  python train.py --iris-csv ${{inputs.iris_csv}}
+
+  '
+code: /subscriptions/9c0f91b8-eb2f-484c-979c-15848c098a6b/resourceGroups/azureml-mlopshack/providers/Microsoft.MachineLearningServices/workspaces/azureml-mlopshack/codes/25062f57-8242-4223-88dc-5b9d0bfb6151/versions/1
+environment: azureml:lightgbm-env:2022-05-31-12-30-01-9604306
+environment_variables: {}
+resources:
+  instance_count: 1
+  properties: {}
+type: command
+parameters: {}
+inputs:
+  iris_csv:
+    mode: ro_mount
+    type: uri_file
+    path: azureml:titanic-train:9
+outputs:
+  default:
+    mode: rw_mount
+    type: uri_folder
+    path: azureml://datastores/workspaceartifactstore/ExperimentRun/dcid.gifted_zoo_n3894f20d9
