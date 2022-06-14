@@ -73,7 +73,7 @@ jobs:
 
       working-directory: outer-loop
     - name: Traffic increase into GREEN
-      run: az ml online-endpoint update -n lgb-endpoint-prod --traffic "green=80 green=20"
+      run: az ml online-endpoint update -n lgb-endpoint-prod --traffic "blue=80 green=20"
     - name: Endpoint Testing
       run: az ml online-endpoint invoke --name lgb-endpoint-prod --request-file ./endpoints_testing/sample_request.json
       working-directory: outer-loop
