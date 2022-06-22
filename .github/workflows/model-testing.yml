@@ -1,11 +1,11 @@
 name: model-testing
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - middle-loop/*
+  # pull_request:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - middle-loop/*
 
 jobs:
   build:

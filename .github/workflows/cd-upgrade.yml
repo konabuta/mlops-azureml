@@ -3,11 +3,11 @@ on:
   workflow_dispatch:
   workflow_run:
       workflows: ["monitoring model and system"]
-  pull_request:
-    branches:
-      - main
-    paths:
-      - outer-loop/*
+  # pull_request:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - outer-loop/*
 
 
 jobs:

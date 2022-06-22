@@ -1,11 +1,11 @@
 name: safe-rollout
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - outer-loop/*
+  # pull_request:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - outer-loop/*
 
 jobs:
   build:
