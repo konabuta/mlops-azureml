@@ -21,6 +21,7 @@ def init():
 
 
 def run(raw_data):
+    print(raw_data)
     categorical_cols = ['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked']
     float_cols = ['Pclass', 'Age', 'SibSp', 'Parch', 'Fare']
     columns = bst.feature_name()
@@ -29,5 +30,6 @@ def run(raw_data):
     test_df = data_preprocess(test_df_original, categorical_cols, float_cols)
     # Make prediction
     out = bst.predict(test_df)
+    print(out.tolist())
     return out.tolist()
     
