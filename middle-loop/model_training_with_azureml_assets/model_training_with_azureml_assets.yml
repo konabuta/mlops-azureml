@@ -8,5 +8,5 @@ inputs:
   iris_csv:
     type: uri_file
     path: azureml:titanic-train@latest
-environment: azureml:lightgbm-env@latest
-compute: azureml:cpu-clusters
+environment: azureml:demo0614@latest
+compute: azureml:gpu-demo-clusters@latest

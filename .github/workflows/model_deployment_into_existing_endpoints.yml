@@ -54,7 +54,7 @@ jobs:
       run: |
         deployment_flag=$(az ml online-deployment list --endpoint-name lgb-endpoint-prod --query "[].name | contains(@,'green')")
         if [ $deployment_flag == "true" ]; then
-          az ml online-deployment delete --endpoint-name lgb-endpoint-prod--name green --yes
+          az ml online-deployment delete --endpoint-name lgb-endpoint-prod --name green --yes
         else
           echo "Deployment green doesn't exist."
         fi     
