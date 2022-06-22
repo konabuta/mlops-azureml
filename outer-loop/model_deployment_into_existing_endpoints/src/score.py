@@ -29,5 +29,10 @@ def run(raw_data):
     test_df = data_preprocess(test_df_original, categorical_cols, float_cols)
     # Make prediction
     out = bst.predict(test_df)
+    info = {
+        "input": raw_data,
+        "output": out.tolist()
+        }
+    print(json.dumps(info))
     return out.tolist()
     
