@@ -1,11 +1,11 @@
 name: model-training
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - inner-loop/*
+  # pull_request:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - inner-loop/*
 
 jobs:
   build:

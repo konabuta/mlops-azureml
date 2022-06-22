@@ -1,11 +1,11 @@
 name: train-logging-local
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - inner-loop/*
+  # pull_request:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - inner-loop/*
 
 jobs:
   build:
